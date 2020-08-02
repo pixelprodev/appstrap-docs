@@ -1,11 +1,12 @@
 import React from 'react'
 import styled from '@emotion/styled'
 import GithubLogo from '../../svg/GithubLogo'
+
 const Container = styled.div({
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'space-between',
-  width: 200,
+  width: 300,
   ' svg': {
     width: 30,
     height: 30,
@@ -31,10 +32,11 @@ const Link = styled.a({
 export default function Links () {
   return (
     <Container>
-      <Link href={'/docs'}>Docs</Link>
-      <Link href={'/plugins'}>Plugins</Link>
+      <Link href='/docs'>Docs</Link>
+      <Link href='/plugins'>Plugins</Link>
+      <Link href='/examples'>Examples</Link>
       <Divider />
-      <Link href={'//github.com/pixelprodev/appstrap'}>
+      <Link href='//github.com/pixelprodev/appstrap'>
         <GithubLogo />
       </Link>
     </Container>

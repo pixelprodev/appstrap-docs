@@ -1,0 +1,12 @@
+{
+  "extends": ["standard", "standard-jsx"],
+  "globals": {
+    "expect": true,
+    "describe": true,
+    "it": true,
+    "before": true,
+    "after": true,
+    "beforeEach": true,
+    "afterEach": true
+  }
+}
