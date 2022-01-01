@@ -6,7 +6,8 @@ export default function CSSReset ({ children }) {
     <>
       <Global
         styles={css`
-          @import url('https://fonts.googleapis.com/css?family=Montserrat:300,400,500,600,700&display=swap');
+          @import url('https://fonts.googleapis.com/css?family=Montserrat:700&display=swap');
+          @import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;1,400;1,700&display=swap');
         
           html, body, h1, h2, h3, h4, h5, h6, p, blockquote, pre, a, abbr, acronym, address, big, cite, code,
           del, dfn, em, img, ins, kbd, q, s, samp, small, strike, strong, sub, sup, tt, var,
@@ -36,13 +37,14 @@ export default function CSSReset ({ children }) {
             border-spacing: 0;
           }
           *, *:before, *:after {
-            font-family: 'Montserrat', Sans-Serif;
+            font-family: 'Roboto', Sans-Serif;
             font-style: normal;
             box-sizing: border-box;
-            color: #1B4A40;
+            color: #293237;
           }
-      `} />
-      { children }
+      `}
+      />
+      {children}
     </>
   )
 }

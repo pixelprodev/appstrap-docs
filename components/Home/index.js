@@ -1,18 +1,10 @@
 import React from 'react'
-import BigLogo from './BigLogo'
-import MissionStatement from './MissionStatement'
-import CTAButtons from './CTAButtons'
-import FeatureHighlights from './FeatureHighlights'
-import OtherFeatures from './OtherFeatures'
+import styled from '@emotion/styled'
 
 export default function HomePage () {
   return (
     <>
-      <BigLogo />
-      <MissionStatement />
-      <CTAButtons />
-      <FeatureHighlights />
-      <OtherFeatures />
+      <span>home page</span>
     </>
   )
 }

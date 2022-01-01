@@ -1,0 +1,110 @@
+# Configuration
+## Default Location
+Unless otherwise specified, Appstrap will look for the config file in `{projectRoot}/.appstrap/config.js`.
+
+---
+## Initialization Options
+
+---
+
+## Config File Properties
+__required__
+#### routes [ ]
+An array of route definition objects that specify which routes and methods to handle on inbound requests.  Specify
+as many or as few method handlers as needed to satisfy your APIs needs.
+<br />
+
+Function handlers are written in the style of Connect/Express as `(req, res, next) => {}`.  Since Appstrap extends the
+Express object directly, you can leverage the power and features you may already be used to with Express or even
+re-use logic as you see fit for your project.
+<br />
+
+Specify an array of objects matching the following shape:
+<br /><br />
+
+##### Object Properties:
+- **path** _string_ : represents the web path to associate the route with
+- **get** _fn_ : (optional) handler invoked to respond to http GET requests to the specified path
+- **put** _fn_ : (optional) handler invoked to respond to http PUT requests to the specified path
+- **post** _fn_ : (optional) handler invoked to respond to http POST requests to the specified path
+- **patch** _fn_ : (optional) handler invoked to respond to http PATCH requests to the specified path
+- **delete** _fn_ : (optional) handler invoked to respond to http DELETE requests to the specified path
+<br /><br />
+
+##### Example:
+```javascript
+{
+  routes: [
+    {
+      path: '/',
+      get: (req, res) => res.send('this is the index page')
+    },
+    {
+      path: '/one',
+      get: (req, res) => res.json({route: '/one'}),
+      post: (req, res) => res.send(`echo body from /one: ${req.body}`)
+    },
+    {
+      path: '/two',
+      delete: (req, res) => res.send('received delete on /two')
+    }
+  ]
+}
+````
+<br /><br />
+
+_optional_
+#### initialState { }
+An object representing the state to initialize into your appstrap server when it starts up.
+```javascript
+{
+  initialState: {
+    foo: 'bar',
+    zip: 'zoom'
+  }
+}
+````
+This object will be injected as the 4th argument to any handler specified in the routes array as shown below.
+```javascript
+(req, res, next, state) => {
+  console.log(state) // { foo: 'bar', zip: 'zoom' }
+}
+```
+Your handlers should write directly to and read from this object.  Appstrap handles the immutability of this
+property behind the scenes.
+<br /><br />
+
+_optional_
+#### statics [ ]
+Allows the mapping of web requests for static assets to local folders and files.  Leverages `express.static`
+under the hood. Specify an array of objects matching the following shape:
+<br /><br />
+
+##### Object Properties:
+- **web** : represents the web path to serve the assets to
+- **local** : represents the path on the filesystem to point the web path to
+<br /><br />
+
+##### Example:
+Given a directory structure like the one shown below:
+```bash
+myProject
+├── .appstrap
+│   ├── config.js
+├── assets
+│   ├── images
+│     └── foo.png
+├── src
+└── package.json
+```
+If your intent is to serve foo.png to your page at `www.myapp.com/images/foo.png`
+- you would enter `/images` as the `web` property aka the web address it is served from
+- you would enter `./assets/images/` as the `local` property aka the local directory where the asset(s) can be found
+```javascript
+{ // .appstrap/config.js
+  statics: [
+    { web: '/images', local: './assets/images' }
+  ]
+  // ..
+}
+```

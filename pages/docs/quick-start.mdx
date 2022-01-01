@@ -1,0 +1,70 @@
+# Quick Start
+
+## Automatic Setup
+Getting started is as easy as running the automatic setup script.
+```bash
+npm init appstrap
+````
+This will create an appstrap config folder at the root of your project with a preconfigured barebones config file.
+This is the recommended way to get started.
+
+---
+
+## Manual Setup
+If you prefer to set things up yourself
+```bash
+npm install @appstrap/core
+```
+
+### Creating a config file
+
+By default, appstrap looks for config file in `{projectRoot}/.appstrap/config.js`. This can be overidden in the
+configuration options to point to a different path within your project.
+Here is an example of the simplest config file needed to get started.
+```jsx
+module.exports = {
+	routes: [
+		{ path: '/', get: (req, res) => {res.send('Hello world!')} }
+	]
+}
+```
+
+For more information on the config file read on [here](/docs/configuration)
+
+### Add script to package.json
+```json
+{
+  "scripts": {
+    "appstrap": "@appstrap/core/go"
+  }
+}
+```
+---
+## Running Appstrap
+### Standalone
+After your config file is created you can launch your server via `npm run appstrap`.  This will start a server on
+port 3000.  To override the port modify the port assignment in your npm run script like: `"appstrap": "@appstrap/core
+--port 5500"`
+
+### Using Appstrap as middleware
+Appstrap can be used directly as connect/express middeware via `app.use()`. Here is an example of how to implement this using
+`webpack-dev-server`.
+
+```javascript
+// webpack.config.js
+
+const Appstrap = require('@appstrap/core')
+const AppstrapWebInteractor = require('@appstrap/interactor-web')
+
+module.exports = {
+  //... other webpack config
+  devServer: {
+    before: (app) => {
+      const strap = new Appstrap()
+      strap.use(AppstrapWebInteractor())
+      app.use(strap)
+    }
+    //... other devserver options
+  }
+}
+```

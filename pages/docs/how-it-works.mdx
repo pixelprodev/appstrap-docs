@@ -1,0 +1,32 @@
+# How it works
+At the time of object initialization, your config file is used to generate some routes that are added to the router
+stack.  These routes are wrapped by the logic for error responses, latency, and interception via fixtures where
+applicable.
+
+---
+
+## An important note
+Appstrap extends an instance of the [Express](https://www.expressjs.com) object. The reason for this is to allow
+seamless integration into any existing workflow you may already have.  It will automatically work as middleware for
+other express servers and is encouraged to be used as such.
+
+---
+
+## The request flow
+As a request is received by the server, the following steps are taken:
+
+1) Interceptors are applied if enabled for the path/method combination of the incoming request
+- If `latency` is enabled, the request is held for the specified amount of `latencyMS`.
+- If `error` is enabled, the request ends with a rejection using the specified `errorText` and `errorStatus`.
+<br /><br />
+
+2) The provided route handler is executed. `res.send` is wrapped to further apply fixtures after
+your handler response is indicated.
+<br /><br />
+
+3) If a fixture or set of fixtures are enabled, each fixture is evaluated to see if it applies to this request.  As
+matches are found, the fixtures are applied in sequence of activation.  The final response consists of the aggregation
+of the base response handler and the result of all fixture applications
+<br /><br />
+
+4) The response is returned to the client
