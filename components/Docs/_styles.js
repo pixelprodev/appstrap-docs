@@ -25,6 +25,7 @@ export default ({
   ' h4': {
     fontSize: 20,
     fontWeight: 500,
+    margin: '20px 0 10px 0',
     color: '#994cc3'
   },
   ' hr': {
@@ -49,6 +50,13 @@ export default ({
       fontSize: 16,
       fontWeight: 500
     }
+  },
+  ' p': {
+    marginBottom: 10
+  },
+  ' a': {
+    fontSize: 16,
+    color: '#888'
   },
   ' ul': {
     paddingLeft: 20

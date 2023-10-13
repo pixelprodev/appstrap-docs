@@ -1,50 +1,112 @@
 # Quick Start
 
-## Automatic Setup
-Getting started is as easy as running the automatic setup script.
-```bash
-npm init appstrap
-````
-This will create an appstrap config folder at the root of your project with a preconfigured barebones config file.
-This is the recommended way to get started.
-
----
-
-## Manual Setup
-If you prefer to set things up yourself
+## Setup & Configuration
 ```bash
 npm install @appstrap/core
 ```
+### A note about the configuration folder
+The configuration folder is the heart of what makes your appstrap deployment run.  Here you will define the initial
+state of your application, the routes it will respond to, the fixtures that will override those responses, etc.  By default,
+appstrap looks for configuration in `{projectRoot}/.appstrap`. 
 
-### Creating a config file
+This can be overidden when initializing a new Appstrap instance like `new Appstrap({ configDir: 'path/to/your/config' })`
 
-By default, appstrap looks for config file in `{projectRoot}/.appstrap/config.js`. This can be overidden in the
-configuration options to point to a different path within your project.
-Here is an example of the simplest config file needed to get started.
-```jsx
-module.exports = {
-	routes: [
-		{ path: '/', get: (req, res) => {res.send('Hello world!')} }
-	]
-}
+Let's start by creating a default config.  Add a folder named `.appstrap` to the root of your project.  We'll define the first
+route next.
+```bash
+touch .appstrap
 ```
 
-For more information on the config file read on [here](/docs/configuration)
+### Routes
+Routes follow a file-system based pattern for anything under the `routes` root folder.  Folders define routes as a
+combination of one or many nested folders to define the route path down to the final leaf file.  The name of the leaf
+file represents the end of the route path.
 
-### Add script to package.json
-```json
-{
-  "scripts": {
-    "appstrap": "@appstrap/core/go"
-  }
+Note: index files are not supported.
+
+Below is an example of how to create an api with a route of `/api/hello-world`
+```text
++-- .appstrap
+|   +-- routes
+|       +-- api
+|           +-- hello-world.js
+```
+Now that you have hello-world.js defined in the file-system router, lets define its handler.
+```js
+module.exports.GET = (req, res) => {
+  res.send( 'Hello World' )
+}
+```
+The above handler will execute against a GET http verb, but what about POST?
+```js
+// .appstrap/routes/api/hello-world.js
+
+module.exports.GET = (req, res) => {
+  res.send( 'Hello World' )
+}
+// Add an export for whatever http verbs you wish to support
+module.exports.POST = (req, res) => {
+  res.json({ message: 'This also works' })
+}
+```
+Let's unpack what we did here.  It probably looks familiar.  That's beacuse it's supposed to!
+The handlers you write should follow [express](https://expressjs.com) handler syntax.  That's because we use express
+to execute them anyway.  Appstrap should support all major features for express.  If it doesn't, let us know.
+
+### Fixtures
+Having functions that can provide dynamic responses is powerful enough, but Appstrap takes things to a whole new level
+with fixtures.  Using fixtures, you can intercept the responses from the handlers you just defined in the last step and
+modify the response, whether that's a single property change of a nested object, or a completely different payload alltogether.
+
+Following the same schema as routes, fixtures are scoped to the `fixtures` folder at the root of your appstrap config.
+Fixtures also follow a file-system pattern to allow for grouping and organization, but this does NOT indicate the routes they effect.
+This is because fixtures are route agnostic and can affect multiple routes if the developer so desires.
+
+We'll create a fixture that overrides our hello-world endpoint from before.
+
+Our configuration directory should now look like this
+```text
++-- .appstrap
+|   +-- routes
+|       +-- api
+|           +-- hello-world.js
+|   +-- fixtures
+|       +-- hello-override.js
+```
+
+Below is an example of a fixture that would apply to our hello-world endpoint defined above.
+```js
+// .appstrap/fixtures/hello-override.js
+
+module.exports = { 
+  routes: [
+    {
+      path: '/api/hello-world',
+      GET: (req, res) => {
+        res.send('Hello world overridden!')
+      }
+    }
+  ]
 }
 ```
 ---
 ## Running Appstrap
+
 ### Standalone
-After your config file is created you can launch your server via `npm run appstrap`.  This will start a server on
-port 3000.  To override the port modify the port assignment in your npm run script like: `"appstrap": "@appstrap/core
---port 5500"`
+Since Appstrap extends the Express object, of course it can run on its own.  Create a server file anywhere you wish and
+with these 5 lines, you can be up and running.  Remember to point to your config file if you change where its located!
+```js
+// server.js
+
+const Appstrap = require('@appstrap/core')
+const AppstrapWebInteractor = require('@appstrap/interactor-web')
+
+const server = new Appstrap()
+server.use(new AppstrapWebInteractor())
+
+server.listen(3000, console.log('Strapped up and ready to go on port 3000'))
+```
+
 
 ### Using Appstrap as middleware
 Appstrap can be used directly as connect/express middeware via `app.use()`. Here is an example of how to implement this using
@@ -68,3 +130,12 @@ module.exports = {
   }
 }
 ```
+---
+## Interacting with Appstrap
+Now that we've defined handlers and fixtures and got our server running.  How do we use them?  How do we activate
+fixtures when we need them?
+
+There are two methods: via REST and via the [Interactor]() package (installed separately).  The examples below show how easy it is
+to include in your project
+
+Once your server is running you can reach the interactor at `//localhost:{yourport}/__interactor`

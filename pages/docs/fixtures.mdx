@@ -1,0 +1,132 @@
+# Fixtures
+
+Fixtures and how they are applied are really what gives Appstrap its true power.  When you are looking for a low-maintenance
+highly configurable solution to reaching your edge cases, fixtures should be the go-to tool.
+
+Fixtures are applied right before the response is sent back to the client from your appstrap instance, and they are the last
+option you have as a developer to intercept, modify, or replace your payloads.
+
+## Anatomy of a fixture
+Each fixture must export an `object` that represents the intercept following this shape
+```js
+module.exports = {
+  routes: [
+    {
+      path: '/route/path/to/effect',
+      mode: 'merge' | 'deepMerge' | 'replace',
+      // must specify a minimum of 1 http verb option below
+      GET: {
+        something: 'replaced'
+      },
+      POST,
+      PUT,
+      DELETE,
+      PATCH
+    }
+  ]
+}
+```
+
+---
+## Intercept Modes
+#### merge (default)
+If no mode is specified or if you specify `merge` as the fixure mode, appstrap will take the response from the handler
+and perform a shallow merge on the object following the same behavior as `Object.assign(payload, fixture)` and return the
+combined result to the consuming client
+``` js
+// payload response
+{ foo: 'bar', something: { childKey: 'should be overridden' }, baz: 'zip' }
+
+// fixture payload
+{ something: 'replaced' }
+
+// combined result
+{ foo: 'bar', something: 'replaced', baz: 'zip' }
+```
+
+#### deepMerge
+Opposite to merge, which performs only a shallow merge on the top most property of the object, when `deepMerge` is specified
+as the fixture mode, Appstrap will apply the fixture recursively to the leaf node of the object(s) specified in the fixture
+payload.  Only the exact specified keys provided will be added/overridden
+
+``` js
+// payload response
+{
+foo: 'bar',
+something: { childKey: { anotherChild: 'should be overridden' }, ignoredChild: 'dont touch me' },
+baz: 'zip'
+}
+
+// fixture payload
+{ something: { childKey: { anotherChild: 'replaced', addedChild: 'added' } } }
+
+// combined result
+{
+foo: 'bar',
+something: { childKey: { anotherChild: 'replaced', addedChild: 'added' }, ignoredChild: 'dont touch me' },
+baz: 'zip'
+}
+```
+
+#### replace
+Replace will completely ignore the response payload from the handler and ONLY return the payload that is specified in the
+fixture payload 
+
+``` js
+{ foo: 'bar', something: { childKey: 'wont exist after a replace' }, baz: 'zip' }
+
+// fixture payload
+{ something: 'replaced' }
+
+// combined result
+{ something: 'replaced' }
+```
+
+---
+## Fixture Composition
+One of the most important things to consider when working with fixtures is that they can be used in conjunction with other fixtures.
+This gives developers the ability to create solutions to complex situations with minimal repetition across variations and edge
+cases. 
+
+Fixtures are maintained in a queue based on activation order. When evaluating a route response, each fixture that is active
+will be evaluated and applied with its intended mode one by one until the entire queue has been iterated through.
+
+Take the following scenario:
+```js
+// preset-one.js
+module.exports = {routes: [{
+  path: '/',
+  mode: 'merge',
+  GET: {
+    foo: 'bar'
+  }
+}]}
+
+// preset-two.js
+module.exports = {routes: [{
+  path: '/',
+  mode: 'replace',
+  GET: {
+    zip: 'zap',
+    whiz: 'bang'
+  }
+}]}
+
+// preset-three.js
+module.exports = {routes: [{
+  path: '/',
+  mode: 'merge',
+  GET: {
+    pow: 'wow',
+    whiz: 'flop',
+    jump: 'jam'
+  }
+}]}
+```
+
+The result of the handled request will be
+```js
+{ zip: 'zap', whiz: 'flop', pow: 'wow', jump: 'jam'}
+```
+This is because `preset-two` had a mode of replace.  This negates `preset-one` and it is totally replaced.  Since 
+`preset-three` has a mode of merge, it is then combined with `preset-two` and duplicate keys are overridden.

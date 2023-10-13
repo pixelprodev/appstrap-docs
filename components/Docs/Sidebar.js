@@ -14,16 +14,12 @@ const Container = styled.div({
   flexShrink: 0
 })
 
-const Link = styled.a({
+const SectionHeader = styled.h2({
   fontSize: 18,
-  lineHeight: '40px',
-  fontWeight: 400,
-  color: '#293237',
-  textDecoration: 'none',
-  ' :active': {
-    fontWeight: 700
-  }
+  fontWeight: 300,
+  marginBottom: 15
 })
+
 const Divider = styled.div({
   width: 175,
   borderBottom: '1px solid #DFE2E5',
@@ -35,14 +31,12 @@ export default function Sidebar () {
     <Container>
       <DocsNavLink href='/docs/quick-start'>Quick Start</DocsNavLink>
       <DocsNavLink href='/docs/how-it-works'>How It Works</DocsNavLink>
-      <DocsNavLink href='/docs/configuration'>Configuration</DocsNavLink>
       <Divider />
-      <DocsNavLink href='/docs/handlers'>Handlers</DocsNavLink>
-      <DocsNavLink href='/docs/interceptors'>Interceptors</DocsNavLink>
+      <SectionHeader>Configuration</SectionHeader>
+      <DocsNavLink href='/docs/routes'>Routes</DocsNavLink>
       <DocsNavLink href='/docs/fixtures'>Fixtures</DocsNavLink>
+      <DocsNavLink href='/docs/state'>State</DocsNavLink>
       <DocsNavLink href='/docs/interactor'>Interactor</DocsNavLink>
-      <Divider />
-      <DocsNavLink href='/docs/testing-strategies'>Testing with Appstrap</DocsNavLink>
 
     </Container>
   )
