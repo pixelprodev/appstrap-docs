@@ -1,0 +1,38 @@
+# Interactor
+
+Appstrap exposes a set of methods to interact with its core functionality.  These can be accessed directly on the appstrap
+instance or via REST at the `__interactor/method` endpoint wherever your server is listening.
+
+### setHandlerEnabled
+Sets whether or not a given handler/method combination will apply when a request comes through.  If the handler is disabled, 
+Appstrap will internally call next() on the route match and take no further action
+
+__Usage__
+```text
+POST __interactor/setHandlerEnabled
+{ path: '/foo', method: 'GET' }
+```
+
+### setModifier
+Sets the status of modifiers on a given route by path/method combo.  You can set latency and whether or not the route returns
+an error and what the error code it returns will be for testing failure scenarios.
+
+__Usage__
+```text
+POST __interactor/setModifier
+{ path: '/foo', method: 'GET', error: true, errorCode: 500, latency: true, latencyMs: 3000}
+```
+
+### clearModifiers
+
+### getStatus
+
+### activateFixture
+
+### activateFixtures
+
+### deactivateFixture
+
+### injectState
+
+### addResponseSequence

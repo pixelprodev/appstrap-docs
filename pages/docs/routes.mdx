@@ -1,1 +1,58 @@
 # Routes
+
+Routes follow a file-system based pattern for anything under the `routes` root folder in your configuration folder.
+Folders define routes as a combination of one or many nested folders to define the route path down to the final leaf file.
+The name of the leaf file represents the end of the route path.
+
+Note: index files are not supported.
+
+Below is an example of how to create an api with a route of `/api/hello-world`
+```text
++-- .appstrap
+|   +-- routes
+|       +-- api
+|           +-- hello-world.js
+```
+
+### Using Route Parameters
+Route parameters are supported via the file-system pattern and can be indicated as such by wrapping your leaf file
+in brackets `[ ]`.  This will then take the name of the file and convert that to the route parameter for the url path.
+
+Note that if named files are present in the same level as a route parameter, the named files will take priority in the router
+and will receive traffic before the route parameter will be evaluated.
+
+Below is an example of how to create an api with a route of `/api/hello-world/:name`
+```text
++-- .appstrap
+|   +-- routes
+|       +-- api
+|           +-- hello-world
+|               +-- [name].js
+```
+The handler then has access to the route parameter as such
+```js
+module.exports.GET = (req, res) => {
+  res.send(`hello ${req.params.name}!`)
+}
+```
+---
+
+## Specifying HTTP handlers
+Each route file may export ONE OR MORE HTTP verbs (GET, PUT, POST, DELETE) with functions that match connect/express syntax
+```js
+module.exports.GET = (req, res, next) => {
+  // return something awesome here
+}
+```
+
+---
+## Accessing in-memory state
+Appstrap adds a 4th argument to the connect/express signature that contains an ephemeral state that only persists for the lifetime
+of the process.  If your use case should dictate, you can write to and read from this state across each of your handlers as they
+are executed.
+```js
+module.exports.GET = (req, res, next, state) => {
+  state.foo = {bar: 'baz'}
+  res.json(state)
+}
+```

@@ -35,9 +35,7 @@ export default function Sidebar () {
       <SectionHeader>Configuration</SectionHeader>
       <DocsNavLink href='/docs/routes'>Routes</DocsNavLink>
       <DocsNavLink href='/docs/fixtures'>Fixtures</DocsNavLink>
-      <DocsNavLink href='/docs/state'>State</DocsNavLink>
       <DocsNavLink href='/docs/interactor'>Interactor</DocsNavLink>
-
     </Container>
   )
 }
